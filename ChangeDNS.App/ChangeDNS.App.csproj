@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <StartupObject>ChangeDNS.App.Program</StartupObject>
+    <Title>$(AssemblyName)</Title>
+    <Authors>www.nimazare.org</Authors>
+    <Copyright>2024</Copyright>
+    <PackageIcon>emoji_119.png</PackageIcon>
+    <ApplicationIcon>config.ico</ApplicationIcon>
+    <PackageId>$(AssemblyName)</PackageId>
+    <AssemblyName>DNS Changer</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="config.ico" />
+  </ItemGroup>
+
+</Project>
