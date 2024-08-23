@@ -16,6 +16,8 @@
     <ApplicationIcon>config.ico</ApplicationIcon>
     <PackageId>$(AssemblyName)</PackageId>
     <AssemblyName>DNS Changer</AssemblyName>
+    <AssemblyVersion>1.1.0.0</AssemblyVersion>
+    <FileVersion>1.1.0.0</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
