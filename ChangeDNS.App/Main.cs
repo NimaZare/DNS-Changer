@@ -129,9 +129,25 @@ public partial class Main : Form
             {
                 processInfo.Arguments = $"Set-DnsClientServerAddress -InterfaceIndex {interfaceIndex} -ServerAddresses ('10.202.10.202','10.202.10.102')";
             }
-            else
+            else if (ComboBoxDNS.SelectedIndex == 1)
             {
                 processInfo.Arguments = $"Set-DnsClientServerAddress -InterfaceIndex {interfaceIndex} -ServerAddresses ('178.22.122.100','185.51.200.2')";
+            }
+            else if (ComboBoxDNS.SelectedIndex == 2)
+            {
+                processInfo.Arguments = $"Set-DnsClientServerAddress -InterfaceIndex {interfaceIndex} -ServerAddresses ('95.85.95.85','2.56.220.2')";
+            }
+            else if (ComboBoxDNS.SelectedIndex == 3)
+            {
+                processInfo.Arguments = $"Set-DnsClientServerAddress -InterfaceIndex {interfaceIndex} -ServerAddresses ('9.9.9.9','149.112.112.112')";
+            }
+            else if (ComboBoxDNS.SelectedIndex == 4)
+            {
+                processInfo.Arguments = $"Set-DnsClientServerAddress -InterfaceIndex {interfaceIndex} -ServerAddresses ('208.67.222.222','208.67.220.220')";
+            }
+            else
+            {
+                processInfo.Arguments = $"Set-DnsClientServerAddress -InterfaceIndex {interfaceIndex} -ServerAddresses ('1.1.1.1','1.0.0.1')";
             }
 
             using var process = new Process();
