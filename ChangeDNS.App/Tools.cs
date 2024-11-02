@@ -4,33 +4,7 @@ namespace ChangeDNS.App;
 
 public static class Tools
 {
-    public static string GetInterfaceIndex(string networkType)
-    {
-        var processInfo = new ProcessStartInfo
-        {
-            FileName = "powershell.exe",
-            CreateNoWindow = true,
-            RedirectStandardOutput = true,
-            Arguments = $"Get-DnsClientServerAddress | Where-Object -Property \"InterfaceAlias\" -EQ -Value \"{networkType}\" | Where-Object -Property \"AddressFamily\" -EQ -Value \"2\" | Select-Object \"InterfaceIndex\"",
-        };
-
-        using var process = new Process();
-        process.StartInfo = processInfo;
-        process.Start();
-        process.WaitForExit();
-
-        var output = process.StandardOutput.ReadToEnd();
-
-        var interfaceIndex = output
-            .Replace("InterfaceIndex", string.Empty)
-            .Replace("-", string.Empty)
-            .Replace(Environment.NewLine, string.Empty)
-            .Replace(" ", string.Empty);
-
-        return interfaceIndex;
-    }
-
-    public static string GetConnectedNetworkType()
+    private static string GetAdapterName()
     {
         var processInfo = new ProcessStartInfo
         {
@@ -46,56 +20,73 @@ public static class Tools
         process.WaitForExit();
 
         var output = process.StandardOutput.ReadToEnd().Trim();
+        var adapterNames = output.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
 
-        if (output.Contains("Wi-Fi"))
-            return "Wi-Fi";
-        if (output.Contains("Ethernet"))
-            return "Ethernet";
-
-        return string.Empty;
-    }
-
-    public static bool SetDNS(string dnsServer)
-    {
-        var networkType = GetConnectedNetworkType();
-        if (string.IsNullOrEmpty(networkType))
+        if (adapterNames.Length == 1)
+            return adapterNames[0];
+        
+        foreach (var name in adapterNames)
         {
-            Console.WriteLine("No active network connection found.");
-            return false;
+            if (name.Contains("Ethernet") || name.Contains("Wi-Fi"))
+                return name;
         }
 
-        var interfaceIndex = GetInterfaceIndex(networkType);
-
-        if (string.IsNullOrEmpty(interfaceIndex))
-        {
-            Console.WriteLine($"Could not find interface index for {networkType}.");
-            return false;
-        }
-
-        var processInfo = new ProcessStartInfo
-        {
-            FileName = "powershell.exe",
-            CreateNoWindow = true,
-            Arguments = $"Set-DnsClientServerAddress -InterfaceIndex {interfaceIndex} -ServerAddresses {dnsServer}",
-        };
-
-        using var process = new Process();
-        process.StartInfo = processInfo;
-        process.Start();
-        process.WaitForExit();
-
-        Console.WriteLine($"{networkType} DNS updated to {dnsServer}");
-        return true;
+        return adapterNames.FirstOrDefault() ?? string.Empty;
     }
 
-    public static void ResetDNS(string interfaceAlias)
+    private static string GetInterfaceIndex()
     {
         var processInfo = new ProcessStartInfo
         {
             FileName = "powershell.exe",
             CreateNoWindow = true,
             RedirectStandardOutput = true,
-            Arguments = $"Set-DnsClientServerAddress -InterfaceAlias \"{interfaceAlias}\" -ResetServerAddresses",
+            Arguments = "Get-NetAdapter | Where-Object { $_.Status -eq 'Up' -and $_.ifIndex -ne $null } | Select-Object -ExpandProperty ifIndex"
+        };
+
+        using var process = new Process();
+        process.StartInfo = processInfo;
+        process.Start();
+        process.WaitForExit();
+
+        var output = process.StandardOutput.ReadToEnd().Trim();
+        return output;
+    }
+
+    public static bool SetDNS(string dnsServer)
+    {
+        var interfaceIndex = GetInterfaceIndex();
+        if (string.IsNullOrEmpty(interfaceIndex))
+        {
+            Console.WriteLine($"Could not find interface index.");
+            return false;
+        }
+
+        var processInfo = new ProcessStartInfo
+        {
+            FileName = "powershell.exe",
+            CreateNoWindow = true,
+            Arguments = $"Set-DnsClientServerAddress -InterfaceIndex \"{interfaceIndex}\" -ServerAddresses {dnsServer}",
+        };
+
+        using var process = new Process();
+        process.StartInfo = processInfo;
+        process.Start();
+        process.WaitForExit();
+
+        Console.WriteLine($"DNS updated to {dnsServer}");
+        return true;
+    }
+
+    public static void ResetDNS()
+    {
+        var interfaceIndex = GetInterfaceIndex();
+        var processInfo = new ProcessStartInfo
+        {
+            FileName = "powershell.exe",
+            CreateNoWindow = true,
+            RedirectStandardOutput = true,
+            Arguments = $"Set-DnsClientServerAddress -InterfaceIndex {interfaceIndex} -ResetServerAddresses",
         };
 
         using var process = new Process();
@@ -104,8 +95,9 @@ public static class Tools
         process.WaitForExit();
     }
 
-    public static void EnableNetworkAdapter(string networkType)
+    public static void EnableNetworkAdapter()
     {
+        var networkType = GetAdapterName();
         var processInfo = new ProcessStartInfo
         {
             FileName = "powershell.exe",
@@ -120,8 +112,9 @@ public static class Tools
         process.WaitForExit();
     }
 
-    public static void DisableNetworkAdapter(string networkType)
+    public static void DisableNetworkAdapter()
     {
+        var networkType = GetAdapterName();
         var processInfo = new ProcessStartInfo
         {
             FileName = "powershell.exe",

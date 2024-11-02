@@ -73,11 +73,10 @@ public partial class Main : Form
 
         try
         {
-            var networkType = Tools.GetConnectedNetworkType();
-            Tools.DisableNetworkAdapter(networkType);
+            Tools.DisableNetworkAdapter();
             lblStatus.Text = "Restart SuccessFull";
-            Thread.Sleep(millisecondsTimeout: 5000);
-            Tools.EnableNetworkAdapter(networkType);
+            Thread.Sleep(millisecondsTimeout: 3000);
+            Tools.EnableNetworkAdapter();
         }
         catch (Exception ex)
         {
@@ -158,9 +157,7 @@ public partial class Main : Form
 
         try
         {
-            var interfaceAlias = Tools.GetConnectedNetworkType();
-            Tools.ResetDNS(interfaceAlias);
-
+            Tools.ResetDNS();
             lblStatus.ForeColor = Color.FromArgb(255, 255, 128);
             lblStatus.Text = "Disconnected";
         }
