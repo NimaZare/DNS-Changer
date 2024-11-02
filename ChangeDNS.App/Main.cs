@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using System.Runtime.InteropServices;
 
 namespace ChangeDNS.App;
@@ -74,10 +73,11 @@ public partial class Main : Form
 
         try
         {
-            Tools.DisableNetworkAdapter();
+            var networkType = Tools.GetConnectedNetworkType();
+            Tools.DisableNetworkAdapter(networkType);
             lblStatus.Text = "Restart SuccessFull";
             Thread.Sleep(millisecondsTimeout: 5000);
-            Tools.EnableNetworkAdapter();
+            Tools.EnableNetworkAdapter(networkType);
         }
         catch (Exception ex)
         {
@@ -89,7 +89,6 @@ public partial class Main : Form
         lblStatus.ForeColor = Color.FromArgb(255, 255, 128);
         lblStatus.Text = "Disconnected";
     }
-
 
     ///  Methods
     private void EnableControls()
@@ -116,57 +115,30 @@ public partial class Main : Form
 
         try
         {
-            var interfaceIndex = Tools.GetInterfaceIndex();
-
-            var processInfo = new ProcessStartInfo
-            {
-                FileName = "powershell.exe",
-                CreateNoWindow = true,
-                RedirectStandardOutput = true,
-            };
-
+            string dnsServer;
             if (ComboBoxDNS.SelectedIndex == 0)
-            {
-                processInfo.Arguments = $"Set-DnsClientServerAddress -InterfaceIndex {interfaceIndex} -ServerAddresses ('10.202.10.202','10.202.10.102')";
-            }
+                dnsServer = "10.202.10.202,10.202.10.102";
             else if (ComboBoxDNS.SelectedIndex == 1)
-            {
-                processInfo.Arguments = $"Set-DnsClientServerAddress -InterfaceIndex {interfaceIndex} -ServerAddresses ('178.22.122.100','185.51.200.2')";
-            }
+                dnsServer = "178.22.122.100,185.51.200.2";
             else if (ComboBoxDNS.SelectedIndex == 2)
-            {
-                processInfo.Arguments = $"Set-DnsClientServerAddress -InterfaceIndex {interfaceIndex} -ServerAddresses ('95.85.95.85','2.56.220.2')";
-            }
+                dnsServer = "95.85.95.85,2.56.220.2";
             else if (ComboBoxDNS.SelectedIndex == 3)
-            {
-                processInfo.Arguments = $"Set-DnsClientServerAddress -InterfaceIndex {interfaceIndex} -ServerAddresses ('9.9.9.9','149.112.112.112')";
-            }
+                dnsServer = "9.9.9.9,149.112.112.112";
             else if (ComboBoxDNS.SelectedIndex == 4)
-            {
-                processInfo.Arguments = $"Set-DnsClientServerAddress -InterfaceIndex {interfaceIndex} -ServerAddresses ('208.67.222.222','208.67.220.220')";
-            }
+                dnsServer = "208.67.222.222,208.67.220.220";
             else
-            {
-                processInfo.Arguments = $"Set-DnsClientServerAddress -InterfaceIndex {interfaceIndex} -ServerAddresses ('1.1.1.1','1.0.0.1')";
-            }
+                dnsServer = "1.1.1.1,1.0.0.1";
 
-            using var process = new Process();
-
-            process.StartInfo = processInfo;
-            process.Start();
-            process.WaitForExit();
-
-            var output = process.StandardOutput.ReadToEnd();
-
-            if (output == string.Empty)
+            var result = Tools.SetDNS(dnsServer);
+            if (result is true)
             {
                 lblStatus.ForeColor = Color.Green;
                 lblStatus.Text = "Connected";
             }
             else
             {
-                lblStatus.ForeColor = Color.Yellow;
-                lblStatus.Text = output;
+                lblStatus.ForeColor = Color.Red;
+                lblStatus.Text = "Disconnected";
             }
         }
         catch (Exception ex)
@@ -182,38 +154,15 @@ public partial class Main : Form
     {
         DisableControls();
         lblStatus.ForeColor = Color.White;
-        lblStatus.Text = "Disconnecting...";
+        lblStatus.Text = "Resetting...";
 
         try
         {
-            var interfaceIndex = Tools.GetInterfaceIndex();
+            var interfaceAlias = Tools.GetConnectedNetworkType();
+            Tools.ResetDNS(interfaceAlias);
 
-            var processInfo = new ProcessStartInfo
-            {
-                FileName = "powershell.exe",
-                CreateNoWindow = true,
-                RedirectStandardOutput = true,
-                Arguments = $"Set-DnsClientServerAddress -InterfaceIndex {interfaceIndex} -ResetServerAddresses",
-            };
-
-            using var process = new Process();
-
-            process.StartInfo = processInfo;
-            process.Start();
-            process.WaitForExit();
-
-            var output = process.StandardOutput.ReadToEnd();
-
-            if (output == string.Empty)
-            {
-                lblStatus.ForeColor = Color.FromArgb(255, 255, 128);
-                lblStatus.Text = "Disconnected";
-            }
-            else
-            {
-                lblStatus.ForeColor = Color.Yellow;
-                lblStatus.Text = output;
-            }
+            lblStatus.ForeColor = Color.FromArgb(255, 255, 128);
+            lblStatus.Text = "Disconnected";
         }
         catch (Exception ex)
         {
