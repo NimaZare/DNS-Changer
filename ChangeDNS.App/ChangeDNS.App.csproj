@@ -11,13 +11,13 @@
     <StartupObject>ChangeDNS.App.Program</StartupObject>
     <Title>$(AssemblyName)</Title>
     <Authors>www.nimazare.org</Authors>
-    <Copyright>2024</Copyright>
+    <Copyright>2025</Copyright>
     <PackageIcon>emoji_119.png</PackageIcon>
     <ApplicationIcon>config.ico</ApplicationIcon>
     <PackageId>$(AssemblyName)</PackageId>
     <AssemblyName>DNS Changer</AssemblyName>
-    <AssemblyVersion>1.5.2.0</AssemblyVersion>
-    <FileVersion>1.5.2.0</FileVersion>
+    <AssemblyVersion>1.6.0.0</AssemblyVersion>
+    <FileVersion>1.6.0.0</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
