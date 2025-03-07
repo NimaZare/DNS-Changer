@@ -119,7 +119,7 @@
             // 
             ComboBoxDNS.DropDownStyle = ComboBoxStyle.DropDownList;
             ComboBoxDNS.FormattingEnabled = true;
-            ComboBoxDNS.Items.AddRange(new object[] { "403.online DNS", "Shecan DNS", "Gcore Public DNS", "Quad9", "OpenDNS", "Cloudflare" });
+            ComboBoxDNS.Items.AddRange(new object[] { "403.online DNS", "Shecan DNS", "Gcore Public DNS", "Quad9", "OpenDNS", "SHATEL", "Cloudflare" });
             ComboBoxDNS.Location = new Point(43, 69);
             ComboBoxDNS.Name = "ComboBoxDNS";
             ComboBoxDNS.Size = new Size(179, 23);

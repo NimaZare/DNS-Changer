@@ -125,6 +125,8 @@ public partial class Main : Form
                 dnsServer = "9.9.9.9,149.112.112.112";
             else if (ComboBoxDNS.SelectedIndex == 4)
                 dnsServer = "208.67.222.222,208.67.220.220";
+            else if (ComboBoxDNS.SelectedIndex == 5)
+                dnsServer = "85.15.1.14,85.15.1.15";
             else
                 dnsServer = "1.1.1.1,1.0.0.1";
 
